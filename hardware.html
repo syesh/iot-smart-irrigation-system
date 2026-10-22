@@ -6,155 +6,276 @@
 <title>Smart Plant IoT | Hardware Guide & Circuit Workbench</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* DACMI Official Design Language Tokens */
 :root {
-  --bg: #0b1120;
-  --card: #131d31;
-  --card-border: #1f2e4d;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --dim: #64748b;
-  
-  --primary: #38bdf8;
-  --green: #10b981;
-  --green-bg: rgba(16, 185, 129, 0.12);
-  --green-border: rgba(16, 185, 129, 0.3);
-  --amber: #f59e0b;
-  --amber-bg: rgba(245, 158, 11, 0.12);
-  --red: #f43f5e;
-  --red-bg: rgba(244, 63, 94, 0.12);
-  
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --radius: 16px;
-  --transition: all 0.2s ease;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+  /* Surfaces & Canvas */
+  --bg-app: #0D0D0D;
+  --bg-sidebar: #121212;
+  --bg-surface: #151515;
+  --bg-surface-raised: #1C1C1C;
+  --bg-surface-active: #242424;
+  --bg-input: #151515;
+
+  /* Hairline Precision Borders */
+  --border-subtle: #292929;
+  --border-strong: #383838;
+  --border-emphasis: #4A4A4A;
+  --border-focus: #555555;
+
+  /* High-Legibility Typography */
+  --text-primary: #F5F5F2;
+  --text-secondary: #B4B4AE;
+  --text-muted: #85857F;
+  --text-disabled: #5D5D58;
+
+  /* Monochrome & High Contrast Accents */
+  --accent-primary: #F5F5F2;
+  --accent-hover: #FFFFFF;
+  --accent-pressed: #E0E0DC;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+
+  /* Semantic Status Tokens */
+  --color-success: #10B981;
+  --color-success-soft: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.28);
+
+  --color-warning: #F59E0B;
+  --color-warning-soft: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.28);
+
+  --color-danger: #F43F5E;
+  --color-danger-soft: rgba(244, 63, 94, 0.12);
+  --color-danger-border: rgba(244, 63, 94, 0.28);
+
+  --color-info: #85857F;
+  --color-info-soft: rgba(255, 255, 255, 0.06);
+  --color-info-border: rgba(255, 255, 255, 0.14);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.7);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-body {
-  font-family: var(--font-sans);
-  background: var(--bg);
-  color: var(--text);
+html, body {
   min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
-  padding-bottom: 40px;
 }
 
-/* Header */
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Header Bar */
 header {
-  background: #0f172a;
-  border-bottom: 1px solid var(--card-border);
-  padding: 14px 20px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-subtle);
   position: sticky;
   top: 0;
   z-index: 50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
+
 .header-inner {
-  max-width: 1080px;
+  max-width: 1160px;
   margin: 0 auto;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
 }
+
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-.brand-icon {
-  font-size: 24px;
-}
-.brand-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-}
-.brand-subtitle {
-  font-size: 11px;
-  color: var(--muted);
+  gap: 12px;
 }
 
-/* Navigation Pills */
-.nav-pills {
+.brand-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
   display: flex;
-  background: #080d1a;
-  border: 1px solid var(--card-border);
-  border-radius: 999px;
-  padding: 3px;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  box-shadow: var(--shadow-subtle);
 }
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-top: 1px;
+}
+
+/* Navigation Segmented Control */
+.nav-pills {
+  display: inline-flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 3px;
+}
+
 .nav-pill {
-  color: var(--muted);
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 12px;
   font-weight: 600;
   padding: 6px 14px;
-  border-radius: 999px;
-  transition: var(--transition);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-}
-.nav-pill.active {
-  background: #1e293b;
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-.nav-pill:hover:not(.active) {
-  color: #fff;
+  gap: 7px;
+  border: 1px solid transparent;
 }
 
-.live-badge {
+.nav-pill:hover:not(.active) {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-pill.active {
+  background: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-subtle);
+}
+
+/* System Pulse Badge */
+.system-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  color: var(--green);
-  background: var(--green-bg);
-  border: 1px solid var(--green-border);
-  padding: 5px 10px;
-  border-radius: 999px;
+  color: var(--text-secondary);
 }
-.live-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--green);
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--green);
+  background-color: var(--color-success);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.9);
+    box-shadow: 0 0 3px rgba(16, 185, 129, 0.3);
+  }
 }
 
 /* Main Container */
 main {
-  max-width: 1080px;
-  margin: 24px auto;
-  padding: 0 16px;
+  max-width: 1160px;
+  margin: 24px auto 48px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Top Intro Banner */
+/* Top Architecture Banner */
 .intro-banner {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(16, 185, 129, 0.08));
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  border-radius: var(--radius);
-  padding: 18px 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+
 .intro-banner h1 {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
 }
+
 .intro-banner p {
   font-size: 12.5px;
-  color: var(--muted);
+  color: var(--text-secondary);
   line-height: 1.6;
+}
+
+.intro-banner strong {
+  color: var(--text-primary);
 }
 
 /* Component Cards Grid */
@@ -165,265 +286,359 @@ main {
 }
 
 .hw-card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
-  transition: var(--transition);
+  gap: 16px;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition-fast);
 }
+
 .hw-card:hover {
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: var(--border-strong);
 }
 
 .hw-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
+
 .hw-title-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
-.hw-icon {
-  font-size: 26px;
+
+.hw-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
 }
+
 .hw-title {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
 }
+
 .hw-role {
   font-size: 11px;
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
+  margin-top: 1px;
 }
+
 .pin-pill {
   font-family: var(--font-mono);
   font-size: 11px;
-  background: rgba(56, 189, 248, 0.1);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  font-weight: 600;
+  background: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   white-space: nowrap;
 }
 
 .hw-desc {
   font-size: 12.5px;
-  color: var(--muted);
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
-/* Visual Interactive Modules inside Cards */
+/* Module Visual Containers */
 .module-visual {
-  background: #090e18;
-  border: 1px solid #1a2744;
-  border-radius: 10px;
-  padding: 12px 14px;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 /* Board LEDs */
 .led-cluster {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   font-family: var(--font-mono);
   font-size: 11px;
 }
+
 .led-item {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text-secondary);
 }
+
 .led-circle {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #334155;
-  transition: var(--transition);
+  background: var(--border-strong);
+  transition: var(--transition-fast);
 }
-.led-circle.pwr { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
-.led-circle.wifi { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; animation: blink 1.5s infinite; }
-.led-circle.relay-on { background: #10b981; box-shadow: 0 0 8px #10b981; }
 
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.led-circle.pwr {
+  background: #f43f5e;
+  box-shadow: 0 0 6px #f43f5e;
+}
 
-/* OLED Graphic */
+.led-circle.wifi {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+  animation: blink 1.5s infinite;
+}
+
+.led-circle.relay-on {
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* High-Contrast Monochrome OLED Graphic */
 .oled-preview {
-  background: #020617;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: #04070D;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
   font-family: var(--font-mono);
   color: #38bdf8;
   font-size: 11px;
   line-height: 1.4;
   width: 100%;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
 }
+
 .oled-preview-header {
-  border-bottom: 1px solid #1e293b;
-  padding-bottom: 3px;
-  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
   display: flex;
   justify-content: space-between;
   font-size: 9.5px;
-  color: var(--dim);
+  color: var(--text-muted);
 }
+
 .oled-preview-big {
   font-size: 14px;
   font-weight: 700;
   color: #a5f3fc;
 }
 
-/* Relay Graphic Box */
+/* Relay Hardware Graphic Box */
 .relay-box {
-  width: 90px;
-  height: 38px;
-  background: #1d4ed8;
-  border-radius: 6px;
-  color: white;
+  width: 100px;
+  height: 36px;
+  background: var(--bg-surface-active);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
-}
-.relay-box.active {
-  background: #059669;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  transition: var(--transition-fast);
 }
 
-/* Action button inside card */
-button {
+.relay-box.active {
+  background: var(--color-success-soft);
+  color: #34d399;
+  border-color: var(--color-success-border);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Action Button Inside Card */
+.btn {
   font-family: var(--font-sans);
-  border: none;
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   padding: 9px 14px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  background: #1e293b;
-  color: var(--text);
-  border: 1px solid var(--card-border);
-  transition: var(--transition);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 7px;
+  transition: var(--transition-fast);
 }
-button:hover {
-  background: #28374d;
-  color: #fff;
+
+.btn:active {
+  transform: translateY(1px);
 }
+
 .btn-primary {
-  background: #0284c7;
-  color: white;
-  border: none;
+  background: var(--accent-primary);
+  color: #0D0D0D;
+  border-color: var(--accent-primary);
+  font-weight: 700;
 }
+
 .btn-primary:hover {
-  background: #0ea5e9;
+  background: var(--accent-hover);
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+}
+
+.btn-secondary {
+  background: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-active);
+  border-color: var(--border-strong);
 }
 
 /* Live Serial Console Section */
 .serial-card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
 }
+
 .serial-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
+
 .serial-header h2 {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
 }
+
+.serial-header p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
 .serial-terminal {
-  background: #030712;
-  border: 1px solid #1f2937;
-  border-radius: 10px;
-  padding: 12px 14px;
+  background: #080808;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  height: 180px;
+  font-size: 12px;
+  height: 200px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
 }
+
 .term-line {
-  line-height: 1.4;
+  line-height: 1.45;
   word-break: break-all;
 }
+
 .term-sys { color: #38bdf8; }
 .term-pump { color: #34d399; font-weight: 700; }
 .term-alert { color: #f43f5e; font-weight: 700; }
-.term-data { color: #94a3b8; }
+.term-data { color: var(--text-secondary); }
 
 .quick-keys-bar {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
   flex-wrap: wrap;
 }
 
-/* Quick Pinout Table */
+/* Quick Pinout Reference Table */
 .pinout-card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
 }
+
 .table-responsive {
   width: 100%;
   overflow-x: auto;
-  margin-top: 10px;
+  margin-top: 12px;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-mono);
   font-size: 12px;
-  min-width: 500px;
+  min-width: 540px;
 }
+
 th, td {
-  padding: 10px 12px;
+  padding: 11px 14px;
   text-align: left;
-  border-bottom: 1px solid #1a2744;
+  border-bottom: 1px solid var(--border-subtle);
 }
+
 th {
-  color: var(--primary);
+  color: var(--text-muted);
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-surface-raised);
 }
+
+th:first-child {
+  border-top-left-radius: var(--radius-xs);
+}
+th:last-child {
+  border-top-right-radius: var(--radius-xs);
+}
+
 td {
-  color: var(--text);
+  color: var(--text-primary);
+}
+
+tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .hardware-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 540px) {
   .header-inner {
     flex-direction: column;
     align-items: flex-start;
@@ -431,6 +646,9 @@ td {
   .nav-pills {
     width: 100%;
     justify-content: center;
+  }
+  .quick-keys-bar button {
+    width: 100%;
   }
 }
 </style>
@@ -440,21 +658,21 @@ td {
 <header>
   <div class="header-inner">
     <div class="brand">
-      <span class="brand-icon">🌱</span>
+      <div class="brand-icon-box">⚡</div>
       <div>
         <div class="brand-title">Smart Plant IoT System</div>
-        <div class="brand-subtitle">Hardware Guide & Circuit Workbench</div>
+        <div class="brand-subtitle">Hardware Architecture &amp; Circuit Workbench</div>
       </div>
     </div>
 
     <!-- Navigation Switcher -->
     <nav class="nav-pills">
-      <a href="index.html" class="nav-pill">📊 Dashboard</a>
-      <a href="hardware.html" class="nav-pill active">🔌 Hardware & Circuit</a>
+      <a href="index.html" class="nav-pill">📊 Telemetry Dashboard</a>
+      <a href="hardware.html" class="nav-pill active">🔌 Hardware &amp; Circuit</a>
     </nav>
 
-    <div class="live-badge">
-      <span class="live-dot"></span>
+    <div class="system-pill">
+      <span class="pulse-dot"></span>
       <span>ESP32 (WROOM-32)</span>
     </div>
   </div>
@@ -464,9 +682,9 @@ td {
 
   <!-- Top Simple Intro -->
   <div class="intro-banner">
-    <h1>Simple Hardware Architecture Explained</h1>
+    <h1>Hardware Architecture &amp; Physical Interfaces</h1>
     <p>
-      An IoT system consists of <strong>Sensors (inputs)</strong>, a <strong>Microcontroller (the brain)</strong>, and <strong>Actuators (outputs)</strong>. Here is how each physical component works and why it was selected for this project.
+      An IoT system consists of <strong>Sensors (inputs)</strong>, a <strong>Microcontroller (the processing unit)</strong>, and <strong>Actuators (outputs)</strong>. Here is how each physical component operates and why it was selected for this project.
     </p>
   </div>
 
@@ -478,7 +696,7 @@ td {
       <div>
         <div class="hw-header">
           <div class="hw-title-group">
-            <span class="hw-icon">🧠</span>
+            <div class="hw-icon-box">🧠</div>
             <div>
               <div class="hw-title">ESP32 / NodeMCU</div>
               <div class="hw-role">The Brain (Microcontroller)</div>
@@ -486,7 +704,7 @@ td {
           </div>
           <span class="pin-pill">3.3V Power</span>
         </div>
-        <p class="hw-desc" style="margin: 10px 0;">
+        <p class="hw-desc" style="margin: 12px 0 0;">
           Central controller running the 2-second sensing loop. Reads sensor ADC values, evaluates irrigation thresholds, and handles Wi-Fi telemetry.
         </p>
       </div>
@@ -497,7 +715,7 @@ td {
           <div class="led-item"><div class="led-circle wifi"></div><span>WiFi</span></div>
           <div class="led-item"><div class="led-circle" id="mcuRelayLed"></div><span>Relay IO23</span></div>
         </div>
-        <span style="font-size: 11px; font-family: var(--font-mono); color: var(--dim);">ESP-WROOM-32</span>
+        <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">ESP-WROOM-32</span>
       </div>
     </div>
 
@@ -506,7 +724,7 @@ td {
       <div>
         <div class="hw-header">
           <div class="hw-title-group">
-            <span class="hw-icon">💧</span>
+            <div class="hw-icon-box">💧</div>
             <div>
               <div class="hw-title">Capacitive Moisture v1.2</div>
               <div class="hw-role">The Sensor (Substrate Input)</div>
@@ -514,14 +732,14 @@ td {
           </div>
           <span class="pin-pill">GPIO 34 (ADC)</span>
         </div>
-        <p class="hw-desc" style="margin: 10px 0;">
+        <p class="hw-desc" style="margin: 12px 0 0;">
           Corrosion-resistant probe measuring soil dielectric permittivity. Outputs an analog voltage (1.2V–3.0V) directly to GPIO 34.
         </p>
       </div>
 
       <div class="module-visual">
-        <span style="font-size: 12px; color: var(--muted);">Analog Signal Output:</span>
-        <span style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--primary);" id="voltReading">1.82 V</span>
+        <span style="font-size: 12px; color: var(--text-secondary);">Analog Signal Output:</span>
+        <span style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: #38bdf8;" id="voltReading">1.82 V</span>
       </div>
     </div>
 
@@ -530,7 +748,7 @@ td {
       <div>
         <div class="hw-header">
           <div class="hw-title-group">
-            <span class="hw-icon">⚡</span>
+            <div class="hw-icon-box">⚡</div>
             <div>
               <div class="hw-title">5V Relay Module</div>
               <div class="hw-role">The Actuator Switch (High-Power Drive)</div>
@@ -538,14 +756,14 @@ td {
           </div>
           <span class="pin-pill">GPIO 23 / D1</span>
         </div>
-        <p class="hw-desc" style="margin: 10px 0;">
+        <p class="hw-desc" style="margin: 12px 0 0;">
           Optocoupler-isolated electronic switch that safely turns the 5V DC submersible pump on and off without overloading the microcontroller.
         </p>
       </div>
 
       <div class="module-visual">
         <div class="relay-box" id="relayBox">RELAY: OFF</div>
-        <button class="btn-primary" id="toggleRelayBtn">⚡ Test Relay Click</button>
+        <button class="btn btn-primary" id="toggleRelayBtn">⚡ Test Relay Click</button>
       </div>
     </div>
 
@@ -554,7 +772,7 @@ td {
       <div>
         <div class="hw-header">
           <div class="hw-title-group">
-            <span class="hw-icon">📺</span>
+            <div class="hw-icon-box">📺</div>
             <div>
               <div class="hw-title">0.96" SSD1306 OLED</div>
               <div class="hw-role">Local Display (I2C Bus)</div>
@@ -562,7 +780,7 @@ td {
           </div>
           <span class="pin-pill">GPIO 21 / 22 (I2C)</span>
         </div>
-        <p class="hw-desc" style="margin: 10px 0;">
+        <p class="hw-desc" style="margin: 12px 0 0;">
           Low-power 128x64 display installed directly on the plant pot to display real-time moisture, temperature, and pump status locally.
         </p>
       </div>
@@ -591,7 +809,7 @@ td {
     <div class="serial-header">
       <div>
         <h2>Live UART Serial Output (COM3 @ 115200 Baud)</h2>
-        <p style="font-size: 12px; color: var(--muted);">Simulates the real microcontroller serial output seen in Arduino IDE Serial Monitor.</p>
+        <p>Simulates the real microcontroller serial output seen in Arduino IDE Serial Monitor.</p>
       </div>
       <span class="pin-pill">115200 Baud · 8N1</span>
     </div>
@@ -601,10 +819,10 @@ td {
     </div>
 
     <div class="quick-keys-bar">
-      <button onclick="sendKey('D')">🌵 Send 'D' (Dry Soil &lt; 30%)</button>
-      <button onclick="sendKey('W')">🌧️ Send 'W' (Add Water &ge; 65%)</button>
-      <button onclick="sendKey('P')">⚡ Send 'P' (Toggle Pump Relay)</button>
-      <button onclick="clearTerm()">🧹 Clear Console</button>
+      <button class="btn btn-secondary" onclick="sendKey('D')">🌵 Send 'D' (Dry Soil &lt; 30%)</button>
+      <button class="btn btn-secondary" onclick="sendKey('W')">🌧️ Send 'W' (Add Water &ge; 65%)</button>
+      <button class="btn btn-secondary" onclick="sendKey('P')">⚡ Send 'P' (Toggle Pump Relay)</button>
+      <button class="btn btn-secondary" onclick="clearTerm()">🧹 Clear Console</button>
     </div>
   </div>
 
@@ -612,8 +830,8 @@ td {
   <div class="pinout-card">
     <div class="serial-header">
       <div>
-        <h2>Circuit Wiring & Pinout Reference</h2>
-        <p style="font-size: 12px; color: var(--muted);">Direct pin mappings and connections for physical microcontroller assembly.</p>
+        <h2>Circuit Wiring &amp; Pinout Reference</h2>
+        <p>Direct pin mappings and connections for physical microcontroller assembly.</p>
       </div>
     </div>
 
