@@ -1,1202 +1,1232 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Plant IoT | Live Telemetry & Simulation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* DACMI Official Design Language Tokens */
-:root {
-  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
-
-  /* Surfaces & Canvas */
-  --bg-app: #0D0D0D;
-  --bg-sidebar: #121212;
-  --bg-surface: #151515;
-  --bg-surface-raised: #1C1C1C;
-  --bg-surface-active: #242424;
-  --bg-input: #151515;
-
-  /* Hairline Precision Borders */
-  --border-subtle: #292929;
-  --border-strong: #383838;
-  --border-emphasis: #4A4A4A;
-  --border-focus: #555555;
-
-  /* High-Legibility Typography */
-  --text-primary: #F5F5F2;
-  --text-secondary: #B4B4AE;
-  --text-muted: #85857F;
-  --text-disabled: #5D5D58;
-
-  /* Monochrome & High Contrast Accents */
-  --accent-primary: #F5F5F2;
-  --accent-hover: #FFFFFF;
-  --accent-pressed: #E0E0DC;
-  --accent-soft: rgba(255, 255, 255, 0.08);
-
-  /* Semantic Status Tokens */
-  --color-success: #10B981;
-  --color-success-soft: rgba(16, 185, 129, 0.12);
-  --color-success-border: rgba(16, 185, 129, 0.28);
-
-  --color-warning: #F59E0B;
-  --color-warning-soft: rgba(245, 158, 11, 0.12);
-  --color-warning-border: rgba(245, 158, 11, 0.28);
-
-  --color-danger: #F43F5E;
-  --color-danger-soft: rgba(244, 63, 94, 0.12);
-  --color-danger-border: rgba(244, 63, 94, 0.28);
-
-  --color-info: #85857F;
-  --color-info-soft: rgba(255, 255, 255, 0.06);
-  --color-info-border: rgba(255, 255, 255, 0.14);
-
-  /* Radii */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-pill: 9999px;
-
-  /* Shadows */
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.45);
-  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.7);
-
-  /* Transitions */
-  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  min-height: 100vh;
-  width: 100%;
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  letter-spacing: -0.012em;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-}
-
-code, pre, .font-mono {
-  font-family: var(--font-mono);
-}
-
-/* Custom Minimal Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: var(--radius-pill);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
-}
-
-/* Header Bar */
-header {
-  background: var(--bg-sidebar);
-  border-bottom: 1px solid var(--border-subtle);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.header-inner {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-icon-box {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  background: var(--bg-surface-raised);
-  border: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 19px;
-  box-shadow: var(--shadow-subtle);
-}
-
-.brand-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.brand-subtitle {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  margin-top: 1px;
-}
-
-/* Navigation Segmented Control */
-.nav-pills {
-  display: inline-flex;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 3px;
-  gap: 3px;
-}
-
-.nav-pill {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  transition: var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid transparent;
-}
-
-.nav-pill:hover:not(.active) {
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.nav-pill.active {
-  background: var(--bg-surface-raised);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-subtle);
-}
-
-/* System Pulse Badge */
-.system-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-.pulse-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--color-success);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
-  animation: pulse-glow 2s infinite ease-in-out;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.9);
-    box-shadow: 0 0 3px rgba(16, 185, 129, 0.3);
-  }
-}
-
-/* Main Container */
-main {
-  max-width: 1160px;
-  margin: 24px auto 48px;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Section Header Eyebrow */
-.section-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: -6px;
-}
-
-.section-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
-.cluster-tag {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 3px 8px;
-  border-radius: var(--radius-xs);
-}
-
-/* 4 Metrics Grid (DACMI Stat Cards) */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.stat-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-card);
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.stat-card:hover {
-  border-color: var(--border-strong);
-}
-
-.stat-label-group {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.stat-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-.stat-glyph {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
-  line-height: 1.1;
-  margin: 12px 0 8px;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-feature-settings: "tnum";
-}
-
-.stat-unit {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-/* DACMI Micro Status Badges */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: var(--radius-xs);
-  width: fit-content;
-  font-family: var(--font-mono);
-}
-
-.badge-green {
-  background: var(--color-success-soft);
-  color: #34d399;
-  border: 1px solid var(--color-success-border);
-}
-
-.badge-amber {
-  background: var(--color-warning-soft);
-  color: #fbbf24;
-  border: 1px solid var(--color-warning-border);
-}
-
-.badge-red {
-  background: var(--color-danger-soft);
-  color: #fb7185;
-  border: 1px solid var(--color-danger-border);
-}
-
-.badge-slate {
-  background: var(--color-info-soft);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
-}
-
-/* Card Progress Bar */
-.progress-bar {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  margin-top: 12px;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: var(--radius-pill);
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
-}
-
-/* Center Interactive Simulation Stage */
-.demo-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* Visual Stage Panel (Glassmorphism + Obsidian Glow) */
-.plant-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  min-height: 310px;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-}
-
-.plant-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 38%, rgba(16, 185, 129, 0.08), transparent 65%);
-  pointer-events: none;
-}
-
-.pedestal {
-  width: 140px;
-  height: 22px;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.08), transparent 75%);
-  position: absolute;
-  bottom: 64px;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.plant-emoji {
-  font-size: 86px;
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.7));
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  z-index: 2;
-}
-
-.plant-emoji.watering {
-  transform: translateY(-8px) scale(1.06);
-}
-
-.water-spray {
-  font-size: 22px;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: var(--transition-fast);
-  position: absolute;
-  top: 40px;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.water-spray.active {
-  opacity: 1;
-  transform: translateY(6px);
-  animation: spray 0.6s infinite alternate ease-in-out;
-}
-
-@keyframes spray {
-  from { transform: translateY(4px) scale(0.95); opacity: 0.8; }
-  to { transform: translateY(14px) scale(1.1); opacity: 1; }
-}
-
-.plant-status-text {
-  margin-top: 20px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-align: center;
-  z-index: 2;
-  max-width: 85%;
-  line-height: 1.5;
-}
-
-.plant-status-text strong {
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-}
-
-/* Interactive Controls Box */
-.controls-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
-  box-shadow: var(--shadow-card);
-}
-
-.box-header h2 {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.015em;
-  margin-bottom: 4px;
-}
-
-.box-header p {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-/* DACMI Precision Button System */
-.button-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.btn {
-  font-family: var(--font-sans);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  transition: var(--transition-fast);
-  text-decoration: none;
-  user-select: none;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn-secondary {
-  background: var(--bg-surface-raised);
-  color: var(--text-primary);
-  border-color: var(--border-subtle);
-}
-
-.btn-secondary:hover {
-  background: var(--bg-surface-active);
-  border-color: var(--border-strong);
-}
-
-/* Primary High-Contrast Button (DACMI Bone White Accent) */
-.btn-primary {
-  background: var(--accent-primary);
-  color: #0D0D0D;
-  border-color: var(--accent-primary);
-  font-weight: 700;
-}
-
-.btn-primary:hover {
-  background: var(--accent-hover);
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
-}
-
-/* Auto 1-Click Action Button */
-.btn-auto {
-  grid-column: span 2;
-  background: var(--accent-primary);
-  color: #0D0D0D;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-}
-
-.btn-auto:hover {
-  background: var(--accent-hover);
-  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.16);
-}
-
-.btn-auto.running {
-  background: var(--color-danger);
-  color: #ffffff;
-  border-color: var(--color-danger);
-  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
-}
-
-/* Manual Slider Control */
-.slider-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.slider-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11.5px;
-  color: var(--text-secondary);
-}
-
-.slider-label strong {
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 5px;
-  border-radius: var(--radius-pill);
-  background: var(--bg-surface-active);
-  outline: none;
-  cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--text-primary);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
-  border: 2px solid var(--bg-app);
-  cursor: pointer;
-  transition: transform var(--transition-fast);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: #ffffff;
-}
-
-/* Telemetry Activity Feed (DACMI Audit Console Style) */
-.log-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-card);
-}
-
-.log-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.log-header h3 {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
-}
-
-.log-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.log-item {
-  font-size: 12px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  padding: 8px 12px;
-  background: var(--bg-surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  transition: var(--transition-fast);
-}
-
-.log-item:hover {
-  border-color: var(--border-strong);
-}
-
-.log-time {
-  color: var(--text-muted);
-  font-size: 11px;
-  flex-shrink: 0;
-}
-
-.log-tag {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  flex-shrink: 0;
-  letter-spacing: 0.04em;
-}
-
-.tag-pump {
-  background: var(--color-success-soft);
-  color: #34d399;
-  border: 1px solid var(--color-success-border);
-}
-
-.tag-dry {
-  background: var(--color-danger-soft);
-  color: #fb7185;
-  border: 1px solid var(--color-danger-border);
-}
-
-.tag-sys {
-  background: var(--color-info-soft);
-  color: var(--text-primary);
-  border: 1px solid var(--color-info-border);
-}
-
-/* Footer & Architecture Info Strip */
-.info-strip {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-muted);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-}
-
-.info-strip a {
-  color: var(--text-primary);
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.info-strip a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 860px) {
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .demo-section {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 540px) {
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nav-pills {
-    width: 100%;
-    justify-content: center;
-  }
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-  .button-grid {
-    grid-template-columns: 1fr;
-  }
-  .btn-auto {
-    grid-column: span 1;
-  }
-  .stat-value {
-    font-size: 28px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Plant IoT | Live Telemetry & Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* DACMI Official Design Language Tokens */
+    :root {
+      --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+      /* Surfaces & Canvas */
+      --bg-app: #0D0D0D;
+      --bg-sidebar: #121212;
+      --bg-surface: #151515;
+      --bg-surface-raised: #1C1C1C;
+      --bg-surface-active: #242424;
+      --bg-input: #151515;
+
+      /* Hairline Precision Borders */
+      --border-subtle: #292929;
+      --border-strong: #383838;
+      --border-emphasis: #4A4A4A;
+      --border-focus: #555555;
+
+      /* High-Legibility Typography */
+      --text-primary: #F5F5F2;
+      --text-secondary: #B4B4AE;
+      --text-muted: #85857F;
+      --text-disabled: #5D5D58;
+
+      /* Monochrome & High Contrast Accents */
+      --accent-primary: #F5F5F2;
+      --accent-hover: #FFFFFF;
+      --accent-pressed: #E0E0DC;
+      --accent-soft: rgba(255, 255, 255, 0.08);
+
+      /* Semantic Status Tokens */
+      --color-success: #10B981;
+      --color-success-soft: rgba(16, 185, 129, 0.12);
+      --color-success-border: rgba(16, 185, 129, 0.28);
+
+      --color-warning: #F59E0B;
+      --color-warning-soft: rgba(245, 158, 11, 0.12);
+      --color-warning-border: rgba(245, 158, 11, 0.28);
+
+      --color-danger: #F43F5E;
+      --color-danger-soft: rgba(244, 63, 94, 0.12);
+      --color-danger-border: rgba(244, 63, 94, 0.28);
+
+      --color-info: #85857F;
+      --color-info-soft: rgba(255, 255, 255, 0.06);
+      --color-info-border: rgba(255, 255, 255, 0.14);
+
+      /* Radii */
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-pill: 9999px;
+
+      /* Shadows */
+      --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.45);
+      --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.7);
+
+      /* Transitions */
+      --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      min-height: 100vh;
+      width: 100%;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      letter-spacing: -0.012em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+
+    code,
+    pre,
+    .font-mono {
+      font-family: var(--font-mono);
+    }
+
+    /* Custom Minimal Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-subtle);
+      border-radius: var(--radius-pill);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+    }
+
+    /* Header Bar */
+    header {
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 1px;
+    }
+
+    /* Navigation Segmented Control */
+    .nav-pills {
+      display: inline-flex;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .nav-pill {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid transparent;
+    }
+
+    .nav-pill:hover:not(.active) {
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-pill.active {
+      background: var(--bg-surface-raised);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    /* System Pulse Badge */
+    .system-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--color-success);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+      animation: pulse-glow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.9);
+        box-shadow: 0 0 3px rgba(16, 185, 129, 0.3);
+      }
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1160px;
+      margin: 24px auto 48px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Section Header Eyebrow */
+    .section-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: -6px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .cluster-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+    }
+
+    /* 4 Metrics Grid (DACMI Stat Cards) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-card);
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .stat-label-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .stat-glyph {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      font-feature-settings: "tnum";
+    }
+
+    .stat-unit {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* DACMI Micro Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+      width: fit-content;
+      font-family: var(--font-mono);
+    }
+
+    .badge-green {
+      background: var(--color-success-soft);
+      color: #34d399;
+      border: 1px solid var(--color-success-border);
+    }
+
+    .badge-amber {
+      background: var(--color-warning-soft);
+      color: #fbbf24;
+      border: 1px solid var(--color-warning-border);
+    }
+
+    .badge-red {
+      background: var(--color-danger-soft);
+      color: #fb7185;
+      border: 1px solid var(--color-danger-border);
+    }
+
+    .badge-slate {
+      background: var(--color-info-soft);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Card Progress Bar */
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+    }
+
+    /* Center Interactive Simulation Stage */
+    .demo-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Visual Stage Panel (Glassmorphism + Obsidian Glow) */
+    .plant-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 310px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .plant-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 38%, rgba(16, 185, 129, 0.08), transparent 65%);
+      pointer-events: none;
+    }
+
+    .pedestal {
+      width: 140px;
+      height: 22px;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.08), transparent 75%);
+      position: absolute;
+      bottom: 64px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .plant-emoji {
+      font-size: 86px;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.7));
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      z-index: 2;
+    }
+
+    .plant-emoji.watering {
+      transform: translateY(-8px) scale(1.06);
+    }
+
+    .water-spray {
+      font-size: 22px;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: var(--transition-fast);
+      position: absolute;
+      top: 40px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .water-spray.active {
+      opacity: 1;
+      transform: translateY(6px);
+      animation: spray 0.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes spray {
+      from {
+        transform: translateY(4px) scale(0.95);
+        opacity: 0.8;
+      }
+
+      to {
+        transform: translateY(14px) scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    .plant-status-text {
+      margin-top: 20px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-align: center;
+      z-index: 2;
+      max-width: 85%;
+      line-height: 1.5;
+    }
+
+    .plant-status-text strong {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    /* Interactive Controls Box */
+    .controls-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .box-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+    }
+
+    .box-header p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* DACMI Precision Button System */
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      font-family: var(--font-sans);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: var(--transition-fast);
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-raised);
+      color: var(--text-primary);
+      border-color: var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-surface-active);
+      border-color: var(--border-strong);
+    }
+
+    /* Primary High-Contrast Button (DACMI Bone White Accent) */
+    .btn-primary {
+      background: var(--accent-primary);
+      color: #0D0D0D;
+      border-color: var(--accent-primary);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+    }
+
+    /* Auto 1-Click Action Button */
+    .btn-auto {
+      grid-column: span 2;
+      background: var(--accent-primary);
+      color: #0D0D0D;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-auto:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.16);
+    }
+
+    .btn-auto.running {
+      background: var(--color-danger);
+      color: #ffffff;
+      border-color: var(--color-danger);
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+    }
+
+    /* Manual Slider Control */
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .slider-label strong {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-surface-active);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+      border: 2px solid var(--bg-app);
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #ffffff;
+    }
+
+    /* Telemetry Activity Feed (DACMI Audit Console Style) */
+    .log-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .log-header h3 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .log-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-item {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      padding: 8px 12px;
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+    }
+
+    .log-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    .log-time {
+      color: var(--text-muted);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .log-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-xs);
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-pump {
+      background: var(--color-success-soft);
+      color: #34d399;
+      border: 1px solid var(--color-success-border);
+    }
+
+    .tag-dry {
+      background: var(--color-danger-soft);
+      color: #fb7185;
+      border: 1px solid var(--color-danger-border);
+    }
+
+    .tag-sys {
+      background: var(--color-info-soft);
+      color: var(--text-primary);
+      border: 1px solid var(--color-info-border);
+    }
+
+    /* Footer & Architecture Info Strip */
+    .info-strip {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+    }
+
+    .info-strip a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .info-strip a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 860px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .demo-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-pills {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-auto {
+        grid-column: span 1;
+      }
+
+      .stat-value {
+        font-size: 28px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-icon-box">🪴</div>
-      <div>
-        <div class="brand-title">Smart Plant IoT System</div>
-        <div class="brand-subtitle">Autonomous Closed-Loop Irrigation</div>
-      </div>
-    </div>
-
-    <!-- Navigation Switcher -->
-    <nav class="nav-pills">
-      <a href="index.html" class="nav-pill active">📊 Telemetry Dashboard</a>
-      <a href="hardware.html" class="nav-pill">🔌 Hardware & Circuit</a>
-    </nav>
-
-    <div class="system-pill">
-      <span class="pulse-dot"></span>
-      <span>Simulated ESP32 Online</span>
-    </div>
-  </div>
-</header>
-
-<main>
-
-  <!-- Section Eyebrow -->
-  <div class="section-meta">
-    <span class="section-eyebrow">Real-Time Microcontroller Telemetry</span>
-    <span class="cluster-tag">NodeMCU / ESP32 · Hysteresis Mode</span>
-  </div>
-
-  <!-- 4 Metrics Grid (DACMI Stat Cards) -->
-  <div class="metrics-grid">
-    
-    <!-- Soil Moisture -->
-    <div class="stat-card">
-      <div class="stat-label-group">
-        <span class="stat-label">Soil Moisture</span>
-        <span class="stat-glyph">💧</span>
-      </div>
-      <div class="stat-value">
-        <span id="moistVal">58</span>
-        <span class="stat-unit">%</span>
-      </div>
-      <span class="badge badge-green" id="moistBadge">Optimal Hydration</span>
-      <div class="progress-bar">
-        <div class="progress-fill" id="moistBar" style="width: 58%; background-color: var(--color-success);"></div>
-      </div>
-    </div>
-
-    <!-- Water Pump State -->
-    <div class="stat-card">
-      <div class="stat-label-group">
-        <span class="stat-label">Pump Relay (GPIO 23)</span>
-        <span class="stat-glyph">⚡</span>
-      </div>
-      <div class="stat-value" id="pumpVal" style="color: var(--text-muted);">
-        OFF
-      </div>
-      <span class="badge badge-slate" id="pumpBadge">Idle · Standby</span>
-      <div class="progress-bar">
-        <div class="progress-fill" id="pumpBar" style="width: 0%; background-color: var(--color-success);"></div>
-      </div>
-    </div>
-
-    <!-- Temperature & Climate -->
-    <div class="stat-card">
-      <div class="stat-label-group">
-        <span class="stat-label">Ambient Climate</span>
-        <span class="stat-glyph">🌡️</span>
-      </div>
-      <div class="stat-value">
-        <span id="tempVal">24.2</span>
-        <span class="stat-unit">°C</span>
-      </div>
-      <span class="badge badge-amber" id="humBadge">62% RH · Comfort</span>
-      <div class="progress-bar">
-        <div class="progress-fill" id="tempBar" style="width: 60%; background-color: var(--color-warning);"></div>
-      </div>
-    </div>
-
-    <!-- Plant Health Index -->
-    <div class="stat-card">
-      <div class="stat-label-group">
-        <span class="stat-label">Plant Health (PHI)</span>
-        <span class="stat-glyph">🩺</span>
-      </div>
-      <div class="stat-value">
-        <span id="phiVal">94</span>
-        <span class="stat-unit">/ 100</span>
-      </div>
-      <span class="badge badge-green" id="phiBadge">Vibrant &amp; Thriving</span>
-      <div class="progress-bar">
-        <div class="progress-fill" id="phiBar" style="width: 94%; background-color: var(--color-success);"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Center Stage & Controller Grid -->
-  <div class="demo-section">
-    
-    <!-- Plant Visual Panel -->
-    <div class="plant-panel">
-      <div class="water-spray" id="waterSpray">💧 💦 💧</div>
-      <div class="pedestal"></div>
-      <div class="plant-emoji" id="plantEmoji">🪴</div>
-      <div class="plant-status-text" id="statusHint">
-        Soil moisture is healthy (<strong>58%</strong>). Target satisfied.
-      </div>
-    </div>
-
-    <!-- Interactive Simulation Controls -->
-    <div class="controls-panel">
-      <div class="box-header">
-        <h2>Interactive Simulation Console</h2>
-        <p>Trigger moisture fluctuations to verify closed-loop hysteresis logic (Turn ON &lt; 30%, Turn OFF &ge; 65%).</p>
-      </div>
-
-      <div class="button-grid">
-        <button class="btn btn-secondary" id="dryBtn">
-          <span>🌵</span> Simulate Dry Soil (18%)
-        </button>
-        <button class="btn btn-secondary" id="wetBtn">
-          <span>🌧️</span> Add Water (72%)
-        </button>
-        <button class="btn btn-secondary" id="manualPumpBtn">
-          <span>⚡</span> Toggle Pump Relay
-        </button>
-        <button class="btn btn-secondary" id="tankBtn">
-          <span>🪣</span> Reservoir: Full (OK)
-        </button>
-        <button class="btn btn-auto" id="autoDemoBtn">
-          <span>▶</span> Run 1-Click Automated Demo Cycle
-        </button>
-      </div>
-
-      <!-- Manual Slider -->
-      <div class="slider-container">
-        <div class="slider-label">
-          <span>Manual ADC Sensor Override</span>
-          <strong id="sliderReading">58%</strong>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon-box">🪴</div>
+        <div>
+          <div class="brand-title">Smart Plant IoT System</div>
+          <div class="brand-subtitle">Autonomous Closed-Loop Irrigation</div>
         </div>
-        <input type="range" id="moistSlider" min="0" max="100" value="58">
+      </div>
+
+      <!-- Navigation Switcher -->
+      <nav class="nav-pills">
+        <a href="index.html" class="nav-pill active">📊 Telemetry Dashboard</a>
+        <a href="hardware.html" class="nav-pill">🔌 Hardware & Circuit</a>
+      </nav>
+
+      <div class="system-pill">
+        <span class="pulse-dot"></span>
+        <span>Simulated ESP32 Online</span>
       </div>
     </div>
+  </header>
 
-  </div>
+  <main>
 
-  <!-- Activity Feed / Audit Trail -->
-  <div class="log-panel">
-    <div class="log-header">
-      <h3>System Telemetry Stream</h3>
-      <span class="cluster-tag">FIFO Event Buffer</span>
+    <!-- Section Eyebrow -->
+    <div class="section-meta">
+      <span class="section-eyebrow">Real-Time Microcontroller Telemetry</span>
+      <span class="cluster-tag">NodeMCU / ESP32 · Hysteresis Mode</span>
     </div>
-    <ul class="log-list" id="activityFeed">
-      <!-- Activity stream rendered dynamically -->
-    </ul>
-  </div>
 
-  <!-- Quick Info Strip -->
-  <div class="info-strip">
-    <span>💡 Thresholds: Dry &lt; 30% | Target &ge; 65%</span>
-    <span>•</span>
-    <span>NodeMCU ESP8266 &amp; ESP32 Compatible</span>
-    <span>•</span>
-    <a href="hardware.html">View Circuit Schematics &amp; Pinout &rarr;</a>
-  </div>
+    <!-- 4 Metrics Grid (DACMI Stat Cards) -->
+    <div class="metrics-grid">
 
-</main>
+      <!-- Soil Moisture -->
+      <div class="stat-card">
+        <div class="stat-label-group">
+          <span class="stat-label">Soil Moisture</span>
+          <span class="stat-glyph">💧</span>
+        </div>
+        <div class="stat-value">
+          <span id="moistVal">58</span>
+          <span class="stat-unit">%</span>
+        </div>
+        <span class="badge badge-green" id="moistBadge">Optimal Hydration</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="moistBar" style="width: 58%; background-color: var(--color-success);"></div>
+        </div>
+      </div>
 
-<script>
-// State
-let moisture = 58;
-let temp = 24.2;
-let humidity = 62;
-let pumpOn = false;
-let tankOk = true;
-let demoTimer = null;
-const DRY_THRESHOLD = 30;
-const TARGET_THRESHOLD = 65;
+      <!-- Water Pump State -->
+      <div class="stat-card">
+        <div class="stat-label-group">
+          <span class="stat-label">Pump Relay (GPIO 23)</span>
+          <span class="stat-glyph">⚡</span>
+        </div>
+        <div class="stat-value" id="pumpVal" style="color: var(--text-muted);">
+          OFF
+        </div>
+        <span class="badge badge-slate" id="pumpBadge">Idle · Standby</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="pumpBar" style="width: 0%; background-color: var(--color-success);"></div>
+        </div>
+      </div>
 
-// Audio Synthesizer (Zero external dependencies)
-let audioCtx = null;
-function beep(freq, duration = 0.08) {
-  try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
-  } catch(e){}
-}
+      <!-- Temperature & Climate -->
+      <div class="stat-card">
+        <div class="stat-label-group">
+          <span class="stat-label">Ambient Climate</span>
+          <span class="stat-glyph">🌡️</span>
+        </div>
+        <div class="stat-value">
+          <span id="tempVal">24.2</span>
+          <span class="stat-unit">°C</span>
+        </div>
+        <span class="badge badge-amber" id="humBadge">62% RH · Comfort</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="tempBar" style="width: 60%; background-color: var(--color-warning);"></div>
+        </div>
+      </div>
 
-function addLog(tag, text) {
-  const feed = document.getElementById('activityFeed');
-  const li = document.createElement('li');
-  li.className = 'log-item';
-  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  
-  let tagClass = 'tag-sys';
-  if (tag === 'PUMP') tagClass = 'tag-pump';
-  else if (tag === 'DRY' || tag === 'ALERT') tagClass = 'tag-dry';
-  
-  li.innerHTML = `<span class="log-time">[${time}]</span><span class="log-tag ${tagClass}">${tag}</span> <span>${text}</span>`;
-  feed.prepend(li);
-  while (feed.children.length > 5) feed.lastElementChild.remove();
-}
+      <!-- Plant Health Index -->
+      <div class="stat-card">
+        <div class="stat-label-group">
+          <span class="stat-label">Plant Health (PHI)</span>
+          <span class="stat-glyph">🩺</span>
+        </div>
+        <div class="stat-value">
+          <span id="phiVal">94</span>
+          <span class="stat-unit">/ 100</span>
+        </div>
+        <span class="badge badge-green" id="phiBadge">Vibrant &amp; Thriving</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="phiBar" style="width: 94%; background-color: var(--color-success);"></div>
+        </div>
+      </div>
 
-function calculatePHI() {
-  let m = 100;
-  if (moisture < DRY_THRESHOLD) m = Math.max(20, 100 - (DRY_THRESHOLD - moisture) * 3);
-  else if (moisture > TARGET_THRESHOLD + 15) m = Math.max(50, 100 - (moisture - 80) * 2);
-  return Math.round(m * 0.6 + 40);
-}
+    </div>
 
-function updateUI() {
-  const mRounded = Math.round(moisture);
-  document.getElementById('moistVal').textContent = mRounded;
-  document.getElementById('sliderReading').textContent = mRounded + '%';
-  document.getElementById('moistSlider').value = mRounded;
-  
-  const mBar = document.getElementById('moistBar');
-  mBar.style.width = mRounded + '%';
+    <!-- Center Stage & Controller Grid -->
+    <div class="demo-section">
 
-  const mBadge = document.getElementById('moistBadge');
-  const plantEmoji = document.getElementById('plantEmoji');
-  const statusHint = document.getElementById('statusHint');
+      <!-- Plant Visual Panel -->
+      <div class="plant-panel">
+        <div class="water-spray" id="waterSpray">💧 💦 💧</div>
+        <div class="pedestal"></div>
+        <div class="plant-emoji" id="plantEmoji">🪴</div>
+        <div class="plant-status-text" id="statusHint">
+          Soil moisture is healthy (<strong>58%</strong>). Target satisfied.
+        </div>
+      </div>
 
-  if (moisture < DRY_THRESHOLD) {
-    mBadge.className = 'badge badge-red';
-    mBadge.textContent = 'Critical Dry';
-    mBar.style.backgroundColor = 'var(--color-danger)';
-    plantEmoji.textContent = '🥀';
-    statusHint.innerHTML = `Soil moisture is critical (<strong>${mRounded}%</strong>). Automated irrigation activated.`;
-  } else if (moisture >= TARGET_THRESHOLD) {
-    mBadge.className = 'badge badge-green';
-    mBadge.textContent = 'Well Saturated';
-    mBar.style.backgroundColor = 'var(--color-success)';
-    plantEmoji.textContent = '🪴';
-    statusHint.innerHTML = `Target saturation satisfied (<strong>${mRounded}%</strong>). Pump in standby mode.`;
-  } else {
-    mBadge.className = 'badge badge-slate';
-    mBadge.textContent = 'Optimal Hydration';
-    mBar.style.backgroundColor = 'var(--text-secondary)';
-    plantEmoji.textContent = '🌿';
-    statusHint.innerHTML = `Soil moisture is within nominal target range (<strong>${mRounded}%</strong>).`;
-  }
+      <!-- Interactive Simulation Controls -->
+      <div class="controls-panel">
+        <div class="box-header">
+          <h2>Interactive Simulation Console</h2>
+          <p>Trigger moisture fluctuations to verify closed-loop hysteresis logic (Turn ON &lt; 30%, Turn OFF &ge; 65%).
+          </p>
+        </div>
 
-  // Pump UI
-  const pumpVal = document.getElementById('pumpVal');
-  const pumpBadge = document.getElementById('pumpBadge');
-  const pumpBar = document.getElementById('pumpBar');
-  const spray = document.getElementById('waterSpray');
+        <div class="button-grid">
+          <button class="btn btn-secondary" id="dryBtn">
+            <span>🌵</span> Simulate Dry Soil (18%)
+          </button>
+          <button class="btn btn-secondary" id="wetBtn">
+            <span>🌧️</span> Add Water (72%)
+          </button>
+          <button class="btn btn-secondary" id="manualPumpBtn">
+            <span>⚡</span> Toggle Pump Relay
+          </button>
+          <button class="btn btn-secondary" id="tankBtn">
+            <span>🪣</span> Reservoir: Full (OK)
+          </button>
+          <button class="btn btn-auto" id="autoDemoBtn">
+            <span>▶</span> Run 1-Click Automated Demo Cycle
+          </button>
+        </div>
 
-  if (pumpOn) {
-    pumpVal.textContent = 'ON';
-    pumpVal.style.color = 'var(--color-success)';
-    pumpBadge.className = 'badge badge-green';
-    pumpBadge.textContent = 'Relay Active';
-    pumpBar.style.width = '100%';
-    plantEmoji.classList.add('watering');
-    spray.classList.add('active');
-  } else {
-    pumpVal.textContent = 'OFF';
-    pumpVal.style.color = 'var(--text-muted)';
-    pumpBadge.className = 'badge badge-slate';
-    pumpBadge.textContent = 'Idle · Standby';
-    pumpBar.style.width = '0%';
-    plantEmoji.classList.remove('watering');
-    spray.classList.remove('active');
-  }
+        <!-- Manual Slider -->
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Manual ADC Sensor Override</span>
+            <strong id="sliderReading">58%</strong>
+          </div>
+          <input type="range" id="moistSlider" min="0" max="100" value="58">
+        </div>
+      </div>
 
-  // Health PHI
-  const phi = calculatePHI();
-  document.getElementById('phiVal').textContent = phi;
-  document.getElementById('phiBar').style.width = phi + '%';
-  const phiBadge = document.getElementById('phiBadge');
-  if (phi >= 80) {
-    phiBadge.className = 'badge badge-green';
-    phiBadge.textContent = 'Vibrant & Thriving';
-    document.getElementById('phiBar').style.backgroundColor = 'var(--color-success)';
-  } else if (phi >= 60) {
-    phiBadge.className = 'badge badge-amber';
-    phiBadge.textContent = 'Moderate Condition';
-    document.getElementById('phiBar').style.backgroundColor = 'var(--color-warning)';
-  } else {
-    phiBadge.className = 'badge badge-red';
-    phiBadge.textContent = 'Needs Attention';
-    document.getElementById('phiBar').style.backgroundColor = 'var(--color-danger)';
-  }
+    </div>
 
-  // Tank Button
-  const tankBtn = document.getElementById('tankBtn');
-  tankBtn.innerHTML = tankOk ? '<span>🪣</span> Reservoir: Full (OK)' : '<span>⚠️</span> Reservoir: EMPTY';
-  tankBtn.style.borderColor = tankOk ? 'var(--border-subtle)' : 'var(--color-danger)';
-  tankBtn.style.color = tankOk ? 'var(--text-primary)' : '#fb7185';
-}
+    <!-- Activity Feed / Audit Trail -->
+    <div class="log-panel">
+      <div class="log-header">
+        <h3>System Telemetry Stream</h3>
+        <span class="cluster-tag">FIFO Event Buffer</span>
+      </div>
+      <ul class="log-list" id="activityFeed">
+        <!-- Activity stream rendered dynamically -->
+      </ul>
+    </div>
 
-function setPump(on, reason = '') {
-  if (on && !tankOk) {
-    addLog('ALERT', 'Cannot run pump: Reservoir tank is empty!');
-    beep(250, 0.2);
-    return;
-  }
-  pumpOn = on;
-  if (on) {
-    addLog('PUMP', `Relay turned ON — ${reason}`);
-    beep(880, 0.1);
-  } else {
-    addLog('PUMP', `Relay turned OFF — ${reason}`);
-    beep(440, 0.08);
-  }
-  updateUI();
-}
+    <!-- Quick Info Strip -->
+    <div class="info-strip">
+      <span>💡 Thresholds: Dry &lt; 30% | Target &ge; 65%</span>
+      <span>•</span>
+      <span>NodeMCU ESP8266 &amp; ESP32 Compatible</span>
+      <span>•</span>
+      <a href="hardware.html">View Circuit Schematics &amp; Pinout &rarr;</a>
+    </div>
 
-function checkLogic() {
-  if (!tankOk) {
-    if (pumpOn) setPump(false, 'Dry-run protection tripped');
-    return;
-  }
-  if (moisture < DRY_THRESHOLD && !pumpOn) {
-    setPump(true, `Moisture (${Math.round(moisture)}%) fell below ${DRY_THRESHOLD}%`);
-  } else if (moisture >= TARGET_THRESHOLD && pumpOn) {
-    setPump(false, `Target saturation (${TARGET_THRESHOLD}%) reached`);
-  }
-}
+  </main>
 
-// Continuous Simulation Loop
-setInterval(() => {
-  if (pumpOn) {
-    moisture = Math.min(100, moisture + 4);
-  } else {
-    moisture = Math.max(0, moisture - 0.2);
-  }
-  checkLogic();
-  updateUI();
-}, 1000);
+  <script>
+    // State
+    let moisture = 58;
+    let temp = 24.2;
+    let humidity = 62;
+    let pumpOn = false;
+    let tankOk = true;
+    let demoTimer = null;
+    const DRY_THRESHOLD = 30;
+    const TARGET_THRESHOLD = 65;
 
-// Event Listeners
-document.getElementById('moistSlider').addEventListener('input', e => {
-  moisture = parseFloat(e.target.value);
-  checkLogic();
-  updateUI();
-});
-
-document.getElementById('dryBtn').addEventListener('click', () => {
-  moisture = 18;
-  addLog('DRY', 'Simulated dry soil (18%). Tripping automated watering.');
-  beep(350, 0.1);
-  checkLogic();
-  updateUI();
-});
-
-document.getElementById('wetBtn').addEventListener('click', () => {
-  moisture = 72;
-  addLog('SYS', 'Added water manually (72%). Pump standby.');
-  beep(550, 0.08);
-  checkLogic();
-  updateUI();
-});
-
-document.getElementById('manualPumpBtn').addEventListener('click', () => {
-  setPump(!pumpOn, 'User manual toggle');
-});
-
-document.getElementById('tankBtn').addEventListener('click', () => {
-  tankOk = !tankOk;
-  if (!tankOk) {
-    addLog('ALERT', 'Reservoir float switch: EMPTY! Pump locked out.');
-    beep(200, 0.25);
-  } else {
-    addLog('SYS', 'Reservoir refilled. Float switch normal.');
-    beep(520, 0.1);
-  }
-  checkLogic();
-  updateUI();
-});
-
-// Automated 1-Click Demo
-document.getElementById('autoDemoBtn').addEventListener('click', () => {
-  const btn = document.getElementById('autoDemoBtn');
-  if (demoTimer) {
-    clearInterval(demoTimer);
-    demoTimer = null;
-    btn.innerHTML = '<span>▶</span> Run 1-Click Automated Demo Cycle';
-    btn.classList.remove('running');
-    addLog('SYS', 'Demo stopped by user.');
-    return;
-  }
-
-  btn.innerHTML = '<span>⏹</span> Stop Demo Cycle';
-  btn.classList.add('running');
-  addLog('SYS', 'Demo started: Soil drying down to 18%...');
-  moisture = 18;
-  checkLogic();
-  updateUI();
-
-  demoTimer = setInterval(() => {
-    if (moisture >= TARGET_THRESHOLD) {
-      clearInterval(demoTimer);
-      demoTimer = null;
-      btn.innerHTML = '<span>▶</span> Run 1-Click Automated Demo Cycle';
-      btn.classList.remove('running');
-      addLog('SYS', 'Demo cycle complete: System automatically stopped pump at target saturation.');
+    // Audio Synthesizer (Zero external dependencies)
+    let audioCtx = null;
+    function beep(freq, duration = 0.08) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { }
     }
-  }, 1000);
-});
 
-// Initial load
-addLog('SYS', 'System online. Simulated NodeMCU / ESP32 active.');
-updateUI();
-</script>
+    function addLog(tag, text) {
+      const feed = document.getElementById('activityFeed');
+      const li = document.createElement('li');
+      li.className = 'log-item';
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      let tagClass = 'tag-sys';
+      if (tag === 'PUMP') tagClass = 'tag-pump';
+      else if (tag === 'DRY' || tag === 'ALERT') tagClass = 'tag-dry';
+
+      li.innerHTML = `<span class="log-time">[${time}]</span><span class="log-tag ${tagClass}">${tag}</span> <span>${text}</span>`;
+      feed.prepend(li);
+      while (feed.children.length > 5) feed.lastElementChild.remove();
+    }
+
+    function calculatePHI() {
+      let m = 100;
+      if (moisture < DRY_THRESHOLD) m = Math.max(20, 100 - (DRY_THRESHOLD - moisture) * 3);
+      else if (moisture > TARGET_THRESHOLD + 15) m = Math.max(50, 100 - (moisture - 80) * 2);
+      return Math.round(m * 0.6 + 40);
+    }
+
+    function updateUI() {
+      const mRounded = Math.round(moisture);
+      document.getElementById('moistVal').textContent = mRounded;
+      document.getElementById('sliderReading').textContent = mRounded + '%';
+      document.getElementById('moistSlider').value = mRounded;
+
+      const mBar = document.getElementById('moistBar');
+      mBar.style.width = mRounded + '%';
+
+      const mBadge = document.getElementById('moistBadge');
+      const plantEmoji = document.getElementById('plantEmoji');
+      const statusHint = document.getElementById('statusHint');
+
+      if (moisture < DRY_THRESHOLD) {
+        mBadge.className = 'badge badge-red';
+        mBadge.textContent = 'Critical Dry';
+        mBar.style.backgroundColor = 'var(--color-danger)';
+        plantEmoji.textContent = '🥀';
+        statusHint.innerHTML = `Soil moisture is critical (<strong>${mRounded}%</strong>). Automated irrigation activated.`;
+      } else if (moisture >= TARGET_THRESHOLD) {
+        mBadge.className = 'badge badge-green';
+        mBadge.textContent = 'Well Saturated';
+        mBar.style.backgroundColor = 'var(--color-success)';
+        plantEmoji.textContent = '🪴';
+        statusHint.innerHTML = `Target saturation satisfied (<strong>${mRounded}%</strong>). Pump in standby mode.`;
+      } else {
+        mBadge.className = 'badge badge-slate';
+        mBadge.textContent = 'Optimal Hydration';
+        mBar.style.backgroundColor = 'var(--text-secondary)';
+        plantEmoji.textContent = '🌿';
+        statusHint.innerHTML = `Soil moisture is within nominal target range (<strong>${mRounded}%</strong>).`;
+      }
+
+      // Pump UI
+      const pumpVal = document.getElementById('pumpVal');
+      const pumpBadge = document.getElementById('pumpBadge');
+      const pumpBar = document.getElementById('pumpBar');
+      const spray = document.getElementById('waterSpray');
+
+      if (pumpOn) {
+        pumpVal.textContent = 'ON';
+        pumpVal.style.color = 'var(--color-success)';
+        pumpBadge.className = 'badge badge-green';
+        pumpBadge.textContent = 'Relay Active';
+        pumpBar.style.width = '100%';
+        plantEmoji.classList.add('watering');
+        spray.classList.add('active');
+      } else {
+        pumpVal.textContent = 'OFF';
+        pumpVal.style.color = 'var(--text-muted)';
+        pumpBadge.className = 'badge badge-slate';
+        pumpBadge.textContent = 'Idle · Standby';
+        pumpBar.style.width = '0%';
+        plantEmoji.classList.remove('watering');
+        spray.classList.remove('active');
+      }
+
+      // Health PHI
+      const phi = calculatePHI();
+      document.getElementById('phiVal').textContent = phi;
+      document.getElementById('phiBar').style.width = phi + '%';
+      const phiBadge = document.getElementById('phiBadge');
+      if (phi >= 80) {
+        phiBadge.className = 'badge badge-green';
+        phiBadge.textContent = 'Vibrant & Thriving';
+        document.getElementById('phiBar').style.backgroundColor = 'var(--color-success)';
+      } else if (phi >= 60) {
+        phiBadge.className = 'badge badge-amber';
+        phiBadge.textContent = 'Moderate Condition';
+        document.getElementById('phiBar').style.backgroundColor = 'var(--color-warning)';
+      } else {
+        phiBadge.className = 'badge badge-red';
+        phiBadge.textContent = 'Needs Attention';
+        document.getElementById('phiBar').style.backgroundColor = 'var(--color-danger)';
+      }
+
+      // Tank Button
+      const tankBtn = document.getElementById('tankBtn');
+      tankBtn.innerHTML = tankOk ? '<span>🪣</span> Reservoir: Full (OK)' : '<span>⚠️</span> Reservoir: EMPTY';
+      tankBtn.style.borderColor = tankOk ? 'var(--border-subtle)' : 'var(--color-danger)';
+      tankBtn.style.color = tankOk ? 'var(--text-primary)' : '#fb7185';
+    }
+
+    function setPump(on, reason = '') {
+      if (on && !tankOk) {
+        addLog('ALERT', 'Cannot run pump: Reservoir tank is empty!');
+        beep(250, 0.2);
+        return;
+      }
+      pumpOn = on;
+      if (on) {
+        addLog('PUMP', `Relay turned ON — ${reason}`);
+        beep(880, 0.1);
+      } else {
+        addLog('PUMP', `Relay turned OFF — ${reason}`);
+        beep(440, 0.08);
+      }
+      updateUI();
+    }
+
+    function checkLogic() {
+      if (!tankOk) {
+        if (pumpOn) setPump(false, 'Dry-run protection tripped');
+        return;
+      }
+      if (moisture < DRY_THRESHOLD && !pumpOn) {
+        setPump(true, `Moisture (${Math.round(moisture)}%) fell below ${DRY_THRESHOLD}%`);
+      } else if (moisture >= TARGET_THRESHOLD && pumpOn) {
+        setPump(false, `Target saturation (${TARGET_THRESHOLD}%) reached`);
+      }
+    }
+
+    // Continuous Simulation Loop
+    setInterval(() => {
+      if (pumpOn) {
+        moisture = Math.min(100, moisture + 4);
+      } else {
+        moisture = Math.max(0, moisture - 0.2);
+      }
+      checkLogic();
+      updateUI();
+    }, 1000);
+
+    // Event Listeners
+    document.getElementById('moistSlider').addEventListener('input', e => {
+      moisture = parseFloat(e.target.value);
+      checkLogic();
+      updateUI();
+    });
+
+    document.getElementById('dryBtn').addEventListener('click', () => {
+      moisture = 18;
+      addLog('DRY', 'Simulated dry soil (18%). Tripping automated watering.');
+      beep(350, 0.1);
+      checkLogic();
+      updateUI();
+    });
+
+    document.getElementById('wetBtn').addEventListener('click', () => {
+      moisture = 72;
+      addLog('SYS', 'Added water manually (72%). Pump standby.');
+      beep(550, 0.08);
+      checkLogic();
+      updateUI();
+    });
+
+    document.getElementById('manualPumpBtn').addEventListener('click', () => {
+      setPump(!pumpOn, 'User manual toggle');
+    });
+
+    document.getElementById('tankBtn').addEventListener('click', () => {
+      tankOk = !tankOk;
+      if (!tankOk) {
+        addLog('ALERT', 'Reservoir float switch: EMPTY! Pump locked out.');
+        beep(200, 0.25);
+      } else {
+        addLog('SYS', 'Reservoir refilled. Float switch normal.');
+        beep(520, 0.1);
+      }
+      checkLogic();
+      updateUI();
+    });
+
+    // Automated 1-Click Demo
+    document.getElementById('autoDemoBtn').addEventListener('click', () => {
+      const btn = document.getElementById('autoDemoBtn');
+      if (demoTimer) {
+        clearInterval(demoTimer);
+        demoTimer = null;
+        btn.innerHTML = '<span>▶</span> Run 1-Click Automated Demo Cycle';
+        btn.classList.remove('running');
+        addLog('SYS', 'Demo stopped by user.');
+        return;
+      }
+
+      btn.innerHTML = '<span>⏹</span> Stop Demo Cycle';
+      btn.classList.add('running');
+      addLog('SYS', 'Demo started: Soil drying down to 18%...');
+      moisture = 18;
+      checkLogic();
+      updateUI();
+
+      demoTimer = setInterval(() => {
+        if (moisture >= TARGET_THRESHOLD) {
+          clearInterval(demoTimer);
+          demoTimer = null;
+          btn.innerHTML = '<span>▶</span> Run 1-Click Automated Demo Cycle';
+          btn.classList.remove('running');
+          addLog('SYS', 'Demo cycle complete: System automatically stopped pump at target saturation.');
+        }
+      }, 1000);
+    });
+
+    // Initial load
+    addLog('SYS', 'System online. Simulated NodeMCU / ESP32 active.');
+    updateUI();
+  </script>
 </body>
+
 </html>
