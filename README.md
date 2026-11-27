@@ -4,7 +4,7 @@ An IoT-based smart irrigation system that monitors soil moisture, temperature, a
 
 ## 🌐 Live Demo
 
-**[View Live Demo](https://syesh.github.io/iot-smart-irrigation-system/)**
+****
 
 ## ✨ Features
 
@@ -49,12 +49,6 @@ iot-project/
 2. Open the project folder.
 3. Run `index.html` in your browser to explore the dashboard.
 4. Open the Wokwi simulator to experiment with the virtual hardware.
-
-## 📚 Documentation
-
-- [Project Report](docs/PROJECT_REPORT.md)
-- [Circuit Diagram](docs/CIRCUIT_DIAGRAM.md)
-- [Technical FAQ](docs/TECHNICAL_FAQ.md)
 
 ## 👨‍💻 Project
 
