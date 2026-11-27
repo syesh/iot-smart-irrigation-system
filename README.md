@@ -4,6 +4,8 @@ An IoT-based smart irrigation system that monitors soil moisture, temperature, a
 
 ## 🌐 Live Demo
 
+https://syesh.github.io/iot-smart-irrigation-system/
+
 ****
 
 ## ✨ Features
