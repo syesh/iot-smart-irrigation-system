@@ -4,7 +4,7 @@ An IoT-based smart irrigation system that monitors soil moisture, temperature, a
 
 ## 🌐 Live Demo
 
-**[View Live Demo](https://syesh.github.io/iot-project/)**
+**[View Live Demo](https://syesh.github.io/iot-smart-irrigation-system/)**
 
 ## ✨ Features
 
@@ -43,7 +43,7 @@ iot-project/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/syesh/iot-project.git
+   git clone https://github.com/syesh/iot-smart-irrigation-system.git
    ```
 
 2. Open the project folder.
